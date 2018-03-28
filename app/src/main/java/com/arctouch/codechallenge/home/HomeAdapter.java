@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.arctouch.codechallenge.R;
@@ -20,15 +21,18 @@ import java.util.List;
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     private List<Movie> movies;
+    private OnItemClickListener onItemClickListener;
 
-    public HomeAdapter(List<Movie> movies) {
+    public HomeAdapter(List<Movie> movies, OnItemClickListener onItemClickListener) {
         this.movies = movies;
+        this.onItemClickListener = onItemClickListener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final MovieImageUrlBuilder movieImageUrlBuilder = new MovieImageUrlBuilder();
 
+        private final RelativeLayout itemRelativeLayout;
         private final TextView titleTextView;
         private final TextView genresTextView;
         private final TextView releaseDateTextView;
@@ -36,16 +40,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
+
+            itemRelativeLayout = itemView.findViewById(R.id.itemRelativeLayout);
             titleTextView = itemView.findViewById(R.id.titleTextView);
             genresTextView = itemView.findViewById(R.id.genresTextView);
             releaseDateTextView = itemView.findViewById(R.id.releaseDateTextView);
             posterImageView = itemView.findViewById(R.id.posterImageView);
         }
 
-        public void bind(Movie movie) {
+        public void bind(Movie movie, OnItemClickListener onItemClickListener) {
             titleTextView.setText(movie.title);
             genresTextView.setText(TextUtils.join(", ", movie.genres));
             releaseDateTextView.setText(movie.releaseDate);
+            itemRelativeLayout.setOnClickListener(v -> onItemClickListener.setOnClickListener(movie.id));
 
             String posterPath = movie.posterPath;
             if (TextUtils.isEmpty(posterPath) == false) {
@@ -71,6 +78,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(movies.get(position));
+        holder.bind(movies.get(position), onItemClickListener);
+    }
+
+    interface OnItemClickListener {
+        void setOnClickListener(int id);
     }
 }

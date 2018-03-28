@@ -1,5 +1,7 @@
 package com.arctouch.codechallenge.home;
 
+import android.content.Intent;
+import android.net.wifi.hotspot2.pps.HomeSp;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +14,8 @@ import com.arctouch.codechallenge.base.BaseActivity;
 import com.arctouch.codechallenge.data.Cache;
 import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
+import com.arctouch.codechallenge.movie.MovieActivity;
+import com.arctouch.codechallenge.util.MovieKeys;
 
 import java.util.ArrayList;
 
@@ -44,8 +48,16 @@ public class HomeActivity extends BaseActivity {
                         }
                     }
 
-                    recyclerView.setAdapter(new HomeAdapter(response.results));
+                    recyclerView.setAdapter(new HomeAdapter(response.results, onItemClickListener));
                     progressBar.setVisibility(View.GONE);
                 });
     }
+
+
+    HomeAdapter.OnItemClickListener onItemClickListener = (id) -> {
+        Intent intent = new Intent(this, MovieActivity.class);
+        intent.putExtra(MovieKeys.MOVIE_ID, id);
+        startActivity(intent);
+    };
+
 }
